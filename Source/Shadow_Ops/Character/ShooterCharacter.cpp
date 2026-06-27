@@ -50,11 +50,14 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void AShooterCharacter::ApplyDamage_Implementation(float DamageAmount, AActor* DamageInstigator)
 {
+	UE_LOG(LogTemp, Warning, TEXT("ApplyDamage_Implementation Fired"));
+
 	if (HealthComponent)
 	{
 		HealthComponent->TakeDamage(DamageAmount);
 	}
 }
+
 
 bool AShooterCharacter::CanBeDamaged_Implementation() const
 {
@@ -67,9 +70,12 @@ void AShooterCharacter::DoDebugTakeDamage()
 
 	UE_LOG(LogTemp, Warning, TEXT("Debug: Taking %f damage"), DebugDamage);
 
+	// TEMP DIRECT CALL
+	ApplyDamage_Implementation(DebugDamage, this);
+
+	// Interface call
 	Execute_ApplyDamage(this, DebugDamage, this);
 }
-
 
 void AShooterCharacter::DoStartFiring() 
 {

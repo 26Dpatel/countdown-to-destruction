@@ -15,29 +15,6 @@ void AShooterPlayerController::BeginPlay()
 	
 	bShowMouseCursor = false;
 	SetInputMode(FInputModeGameOnly());
-	
-	checkf(HUDWidgetClass, TEXT("The HUD Widget Class has not been specified in editor!"));
-	if (HUDWidgetClass)
-	{
-		HUDWidget = CreateWidget<UUserWidget>(this, HUDWidgetClass);
-		if (HUDWidget)
-		{
-			HUDWidget->AddToViewport(0);
-		}
-	}
-	
-	if (APawn* ControlledPawn = GetPawn())
-	{
-		UHealthComponent* Health =
-			ControlledPawn->FindComponentByClass<UHealthComponent>();
-
-		if (Health)
-		{
-			Health->OnDeath.AddDynamic(
-				this,
-				&AShooterPlayerController::OnDeath);
-		}
-	}
 }
 
 void AShooterPlayerController::SetupInputComponent()
@@ -77,6 +54,20 @@ void AShooterPlayerController::OnPossess(APawn* InPawn)
 	{
 		// add the player tag
 		ShooterCharacter->Tags.Add(PlayerPawnTag);
+	}
+	
+	if (HUDWidgetClass && !HUDWidget)
+	{
+		HUDWidget = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+		if (HUDWidget)
+		{
+			HUDWidget->AddToViewport(0);
+		}
+	}
+	
+	if (UHealthComponent* Health = InPawn->FindComponentByClass<UHealthComponent>())
+	{
+		Health->OnDeath.AddDynamic(this, &AShooterPlayerController::OnDeath);
 	}
 }
 

@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -10,11 +8,6 @@ class UInputMappingContext;
 class AShooterCharacter;
 class UShooterBulletCounterUI;
 
-/**
- *  Simple PlayerController for a first person shooter game
- *  Manages input mappings
- *  Respawns the player pawn when it's destroyed
- */
 UCLASS(abstract)
 class SHADOW_OPS_API AShooterPlayerController : public APlayerController
 {

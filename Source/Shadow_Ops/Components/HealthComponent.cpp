@@ -15,6 +15,7 @@ void UHealthComponent::BeginPlay()
 
 void UHealthComponent::TakeDamage(float DamageAmount)
 {
+	UE_LOG(LogTemp, Warning, TEXT("TakeDamage Fired"));
 	if (IsDead())
 	{
 		return;
