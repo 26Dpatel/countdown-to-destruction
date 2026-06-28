@@ -7,7 +7,6 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/World.h"
 #include "Camera/CameraComponent.h"
-#include "TimerManager.h"
 #include "Components/HealthComponent.h"
 
 AShooterCharacter::AShooterCharacter()
@@ -70,11 +69,8 @@ void AShooterCharacter::DoDebugTakeDamage()
 
 	UE_LOG(LogTemp, Warning, TEXT("Debug: Taking %f damage"), DebugDamage);
 
-	// TEMP DIRECT CALL
+	// DIRECT CALL
 	ApplyDamage_Implementation(DebugDamage, this);
-
-	// Interface call
-	Execute_ApplyDamage(this, DebugDamage, this);
 }
 
 void AShooterCharacter::DoStartFiring() 

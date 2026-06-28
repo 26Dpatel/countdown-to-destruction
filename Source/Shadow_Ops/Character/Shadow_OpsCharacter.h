@@ -13,80 +13,123 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
+// -------------------------
+// Stamina Delegates
+// -------------------------
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStaminaChanged, float, CurrentStamina, float, MaxStamina);
+
 UCLASS(abstract)
 class AShadow_OpsCharacter : public ACharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	/** Pawn mesh: first person view (arms; seen only by self) */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* FirstPersonMesh;
+    /** Pawn mesh: first person view (arms; seen only by self) */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+    USkeletalMeshComponent* FirstPersonMesh;
 
-	/** First person camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCameraComponent;
+    /** First person camera */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+    UCameraComponent* FirstPersonCameraComponent;
 
 public:
-	AShadow_OpsCharacter();
-	
-	/** Returns the first person mesh **/
-	USkeletalMeshComponent* GetFirstPersonMesh() const { return FirstPersonMesh; }
+    AShadow_OpsCharacter();
 
-	/** Returns first person camera component **/
-	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
-	
-	/** Set up input action bindings */
-	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+    virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+    virtual void Tick(float DeltaSeconds) override;
+
+    /** Returns the first person mesh **/
+    USkeletalMeshComponent* GetFirstPersonMesh() const { return FirstPersonMesh; }
+
+    /** Returns first person camera component **/
+    UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+    /** Returns stamina as a per cent (0–1) */
+    UFUNCTION(BlueprintCallable, Category="Stamina")
+    float GetStaminaPercent() const;
 
 protected:
-	
-	UPROPERTY(BlueprintReadOnly, Category = "UI")
-	TObjectPtr<UUserWidget> PauseWidget;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> PauseMenuClass;
 
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* JumpAction;
-	
-	/** Pause game Action */                  
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* PauseGameAction;                  
+    // -------------------------
+    // UI
+    // -------------------------
+    UPROPERTY(BlueprintReadOnly, Category = "UI")
+    TObjectPtr<UUserWidget> PauseWidget;
+    
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<UUserWidget> PauseMenuClass;
 
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* MoveAction;
+    // -------------------------
+    // Input Actions
+    // -------------------------
+    UPROPERTY(EditAnywhere, Category ="Input")
+    UInputAction* JumpAction;
 
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* LookAction;
+    UPROPERTY(EditAnywhere, Category ="Input")
+    UInputAction* PauseGameAction;
 
-	/** Mouse Look Input Action */
-	UPROPERTY(EditAnywhere, Category ="Input")
-	UInputAction* MouseLookAction;
-	
-	/** Called from Input Actions for movement input */
-	void MoveInput(const FInputActionValue& Value);
+    UPROPERTY(EditAnywhere, Category ="Input")
+    UInputAction* MoveAction;
 
-	/** Called from Input Actions for looking input */
-	void LookInput(const FInputActionValue& Value);
+    UPROPERTY(EditAnywhere, Category ="Input")
+    UInputAction* LookAction;
 
-	/** Handles aim inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoAim(float Yaw, float Pitch);
+    UPROPERTY(EditAnywhere, Category ="Input")
+    UInputAction* MouseLookAction;
 
-	/** Handles move inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoMove(float Right, float Forward);
+    UPROPERTY(EditAnywhere, Category="Input")
+    UInputAction* SprintAction;
 
-	/** Handles jump start inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpStart();
+    // -------------------------
+    // Movement Speeds
+    // -------------------------
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
+    float WalkSpeed = 600.0f;
 
-	/** Handles jump end inputs from either controls or UI interfaces */
-	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoJumpEnd();
-	
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
+    float SprintSpeed = 900.0f;
+
+    // -------------------------
+    // Stamina System
+    // -------------------------
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Stamina")
+    float Stamina = 100.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Stamina")
+    float MaxStamina = 100.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Stamina")
+    float StaminaDrainRate = 20.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Stamina")
+    float StaminaRegenRate = 10.0f;
+
+    bool bIsSprinting = false;
+
+    /** Stamina changed event */
+    UPROPERTY(BlueprintAssignable, Category="Stamina|Events")
+    FOnStaminaChanged OnStaminaChanged;
+    
+    // -------------------------
+    // Input Functions
+    // -------------------------
+    void MoveInput(const FInputActionValue& Value);
+    void LookInput(const FInputActionValue& Value);
+
+    UFUNCTION(BlueprintCallable, Category="Input")
+    virtual void DoAim(float Yaw, float Pitch);
+
+    UFUNCTION(BlueprintCallable, Category="Input")
+    virtual void DoMove(float Right, float Forward);
+
+    UFUNCTION(BlueprintCallable, Category="Input")
+    virtual void DoJumpStart();
+
+    UFUNCTION(BlueprintCallable, Category="Input")
+    virtual void DoJumpEnd();
+
+    UFUNCTION(BlueprintCallable, Category="Input")
+    virtual void DoSprintStart();
+
+    UFUNCTION(BlueprintCallable, Category="Input")
+    virtual void DoSprintEnd();
 };
-
