@@ -11,7 +11,6 @@ class SHADOW_OPS_API ASeekerAIController : public AAIController
 
 public:
 	ASeekerAIController();
-	
-	virtual void Tick(float DeltaTime) override;
 
+	virtual void Tick(float DeltaTime) override;
 };

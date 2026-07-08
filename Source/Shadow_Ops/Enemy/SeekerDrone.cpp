@@ -1,40 +1,46 @@
 ﻿#include "SeekerDrone.h"
-#include "SeekerAIController.h"
 #include "Interfaces/Damageable.h"
+#include "Kismet/GameplayStatics.h"
 
 ASeekerDrone::ASeekerDrone()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
-	AIControllerClass = ASeekerAIController::StaticClass();
 }
 
 void ASeekerDrone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Move toward the player
+	APawn* Player = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (Player)
+	{
+		FVector Direction = (Player->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		AddMovementInput(Direction);
+	}
+
 	CheckContactDamage();
 }
 
 void ASeekerDrone::CheckContactDamage()
 {
-	// check if energy time has passed to damage
-	float CurrentTime{ static_cast<float>(GetWorld()->GetTimeSeconds()) };
+	float CurrentTime = GetWorld()->GetTimeSeconds();
 	if (CurrentTime - LastContactDamageTime < ContactCooldown)
-	{
 		return;
-	}
-	
-	// get all overlapping actors
+
 	TArray<AActor*> OverlappingActors;
 	GetOverlappingActors(OverlappingActors);
-	
-	// apply damage
+
 	for (AActor* Actor : OverlappingActors)
 	{
-		IDamageable* Damageable{ Cast<IDamageable>(Actor) };
-		if (Damageable && !Cast<AEnemyBase>(Actor))
+		// Don't damage other enemies
+		if (Cast<AEnemyBase>(Actor))
+			continue;
+
+		// Check interface properly
+		if (Actor->GetClass()->ImplementsInterface(UDamageable::StaticClass()))
 		{
-			Damageable->ApplyDamage(ContactDamage, this);
+			IDamageable::Execute_ApplyDamage(Actor, ContactDamage, this);
 			LastContactDamageTime = CurrentTime;
 			break;
 		}

@@ -6,7 +6,8 @@ public class Shadow_Ops : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] {
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
 			"Core",
 			"CoreUObject",
 			"Engine",
@@ -18,18 +19,16 @@ public class Shadow_Ops : ModuleRules
 			"SlateCore"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
-
-		PublicIncludePaths.AddRange(new string[] {
-			"Shadow_Ops"
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			// Add private modules here if needed
 		});
 
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-
-		// Uncomment if you are using online features
-		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
-
-		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+		// Include all public headers inside Source/Shadow_Ops/
+		PublicIncludePaths.AddRange(new string[]
+		{
+			"Shadow_Ops",
+			"Shadow_Ops/Enemy"
+		});
 	}
 }

@@ -13,13 +13,15 @@ public:
 	ASeekerDrone();
 
 	virtual void Tick(float DeltaTime) override;
+
 protected:
-	
-	float ContactDamage{ 15.0f };
-	float ContactCooldown{ 1.0f };
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage")
+	float ContactDamage{ 15.f };	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage")
+	float ContactCooldown{ 1.f };
+
 private:
-	float LastContactDamageTime;
-	
+	float LastContactDamageTime{ 0.f };
+
 	void CheckContactDamage();
 };
