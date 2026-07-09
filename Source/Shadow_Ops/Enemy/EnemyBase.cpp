@@ -1,6 +1,9 @@
 ﻿#include "EnemyBase.h"
+
+#include "Character/ShooterCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemyBase::AEnemyBase()
 {
@@ -29,6 +32,12 @@ void AEnemyBase::BeginPlay()
 	CurrentHealth = MaxHealth;
 	MovementComponent->MaxSpeed = MoveSpeed;
 	SpawnTime = GetWorld()->GetTimeSeconds();
+
+
+	if (AShooterCharacter* Shooter = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(this, 0)))
+	{
+		OnEnemyDeath.AddDynamic(Shooter, &AShooterCharacter::HandleEnemyKilled);
+	}
 }
 
 void AEnemyBase::Tick(float DeltaTime)

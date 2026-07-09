@@ -13,42 +13,37 @@ class UInputComponent;
 class UHealthComponent;
 class UPawnNoiseEmitterComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKillCountChanged, int32, NewKillCount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoChanged, int32, CurrentBullets, int32, MagazineSize);
+
 UCLASS(abstract)
 class SHADOW_OPS_API AShooterCharacter : public AShadow_OpsCharacter, public IShooterWeaponHolder, public IDamageable
 {
     GENERATED_BODY()
     
-    /** AI Noise emitter component */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
     UPawnNoiseEmitterComponent* PawnNoiseEmitter;
 
 protected:
 
-    /** Fire weapon input action */
     UPROPERTY(EditAnywhere, Category ="Input")
     UInputAction* FireAction;
 
-    /** Switch weapon input action */
     UPROPERTY(EditAnywhere, Category ="Input")
     UInputAction* SwitchWeaponAction;
 
-    /** Name of the first person mesh weapon socket */
     UPROPERTY(EditAnywhere, Category ="Weapons")
     FName FirstPersonWeaponSocket = FName("HandGrip_R");
 
-    /** Name of the third person mesh weapon socket */
     UPROPERTY(EditAnywhere, Category ="Weapons")
     FName ThirdPersonWeaponSocket = FName("HandGrip_R");
 
-    /** Max distance to use for aim traces */
     UPROPERTY(EditAnywhere, Category ="Aim", meta = (ClampMin = 0, ClampMax = 100000, Units = "cm"))
     float MaxAimDistance = 10000.0f;
     
-    /** List of weapons picked up by the character */
     UPROPERTY(EditAnywhere, Category ="Weapons")
     TArray<AShooterWeapon*> OwnedWeapons;
 
-    /** Weapon currently equipped and ready to shoot with */
     UPROPERTY(EditAnywhere, Category ="Weapons")
     TObjectPtr<AShooterWeapon> CurrentWeapon;
 
@@ -57,7 +52,6 @@ protected:
 
     FTimerHandle RespawnTimer;
     
-    /** Returns true if the character already owns a weapon of the given class */
     AShooterWeapon* FindWeaponOfType(TSubclassOf<AShooterWeapon> WeaponClass) const;
     
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -65,13 +59,8 @@ protected:
 
 public:
     
-    /** Constructor */
     AShooterCharacter();
-    
-    /** Gameplay initialization */
     virtual void BeginPlay() override;
-    
-    /** Set up input action bindings */
     virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
     
     virtual void ApplyDamage_Implementation(float DamageAmount, AActor* DamageInstigator) override;
@@ -80,55 +69,27 @@ public:
     UFUNCTION(BlueprintCallable, Category="Debug")
     void DoDebugTakeDamage();
     
-    /** Handles start firing input */
     UFUNCTION(BlueprintCallable, Category="Input")
     void DoStartFiring();
 
-    /** Handles stop firing input */
     UFUNCTION(BlueprintCallable, Category="Input")
     void DoStopFiring();
 
-    /** Handles switch weapon input */
     UFUNCTION(BlueprintCallable, Category="Input")
     void DoSwitchWeapon();
     
-    /** Debug: Take damage input action */
     UPROPERTY(EditAnywhere, Category="Input")
     UInputAction* DebugTakeDamageAction;
 
-    /** Reload input action */
     UPROPERTY(EditAnywhere, Category="Input")
     UInputAction* ReloadAction;
     
-    /** Handles reload input */
     UFUNCTION(BlueprintCallable, Category="Input")
     void DoReload();
-
-
-    // --- Ammo Update Delegate ---
-    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoChanged, int32, CurrentBullets, int32, MagazineSize);
-
+    
     UPROPERTY(BlueprintAssignable, Category="Weapons")
     FOnAmmoChanged OnAmmoChanged;
-
-    // --- Clean UI Getters (RESTORED) ---
-    UFUNCTION(BlueprintPure, Category="Weapons")
-    AShooterWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
-
-    UFUNCTION(BlueprintPure, Category="Weapons")
-    int32 GetCurrentAmmo() const
-    {
-        return CurrentWeapon ? CurrentWeapon->GetBulletCount() : 0;
-    }
-
-    UFUNCTION(BlueprintPure, Category="Weapons")
-    int32 GetCurrentMagazineSize() const
-    {
-        return CurrentWeapon ? CurrentWeapon->GetMagazineSize() : 0;
-    }
-
-    //~Begin IShooterWeaponHolder interface
-
+    
     virtual void AttachWeaponMeshes(AShooterWeapon* Weapon) override;
     virtual void PlayFiringMontage(UAnimMontage* Montage) override;
     virtual void AddWeaponRecoil(float Recoil) override;
@@ -137,6 +98,13 @@ public:
     virtual void OnWeaponActivated(AShooterWeapon* Weapon) override;
     virtual void OnWeaponDeactivated(AShooterWeapon* Weapon) override;
     virtual void OnSemiWeaponRefire() override;
+    
+    UPROPERTY(BlueprintAssignable, Category="Stats")
+    FOnKillCountChanged OnKillCountChanged;
 
-    //~End IShooterWeaponHolder interface
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Stats")
+    int32 KillCount = 0;
+
+    UFUNCTION()
+    void HandleEnemyKilled(AActor* Enemy);
 };

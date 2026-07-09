@@ -162,7 +162,6 @@ void AShooterCharacter::OnWeaponActivated(AShooterWeapon* Weapon)
     GetFirstPersonMesh()->SetAnimInstanceClass(Weapon->GetFirstPersonAnimInstanceClass());
     GetMesh()->SetAnimInstanceClass(Weapon->GetThirdPersonAnimInstanceClass());
 
-    // OLD AMMO BROADCAST RESTORED
     OnAmmoChanged.Broadcast(Weapon->GetBulletCount(), Weapon->GetMagazineSize());
 }
 
@@ -185,4 +184,11 @@ AShooterWeapon* AShooterCharacter::FindWeaponOfType(TSubclassOf<AShooterWeapon> 
     }
 
     return nullptr;
+}
+
+void AShooterCharacter::HandleEnemyKilled(AActor* Enemy)
+{
+    KillCount++;
+    OnKillCountChanged.Broadcast(KillCount);
+    UE_LOG(LogTemp, Warning, TEXT("Kill Count Updated: %d"), KillCount);
 }
