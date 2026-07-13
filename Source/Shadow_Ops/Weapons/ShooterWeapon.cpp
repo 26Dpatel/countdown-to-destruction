@@ -115,7 +115,6 @@ void AShooterWeapon::Fire()
         }
 
         StopFiring();
-        Reload();
         return;
     }
 
