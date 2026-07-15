@@ -8,18 +8,21 @@
 #include "Engine/World.h"
 #include "Camera/CameraComponent.h"
 #include "Components/HealthComponent.h"
+#include "Components/HeartRateComponent.h"
 
 AShooterCharacter::AShooterCharacter()
 {
     PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Pawn Noise Emitter"));
     GetCharacterMovement()->RotationRate = FRotator(0.0f, 600.0f, 0.0f);
     HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+    HeartRateComponent = CreateDefaultSubobject<UHeartRateComponent>(TEXT("HeartRateComponent"));
 }
 
 void AShooterCharacter::BeginPlay()
 {
     Super::BeginPlay();
 }
+
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

@@ -11,6 +11,7 @@ class AShooterWeapon;
 class UInputAction;
 class UInputComponent;
 class UHealthComponent;
+class UHeartRateComponent;
 class UPawnNoiseEmitterComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKillCountChanged, int32, NewKillCount);
@@ -24,6 +25,64 @@ class SHADOW_OPS_API AShooterCharacter : public AShadow_OpsCharacter, public ISh
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
     UPawnNoiseEmitterComponent* PawnNoiseEmitter;
 
+public:
+    
+    AShooterCharacter();
+    virtual void BeginPlay() override;
+    virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+    
+    UPROPERTY(BlueprintAssignable, Category="Weapons")
+    FOnAmmoChanged OnAmmoChanged;
+    
+    UPROPERTY(BlueprintAssignable, Category="Stats")
+    FOnKillCountChanged OnKillCountChanged;
+    
+    virtual void ApplyDamage_Implementation(float DamageAmount, AActor* DamageInstigator) override;
+    virtual bool CanBeDamaged_Implementation() const override;
+    
+    UFUNCTION(BlueprintCallable, Category="Debug")
+    void DoDebugTakeDamage();
+    
+    UFUNCTION(BlueprintCallable, Category="Input")
+    void DoStartFiring();
+
+    UFUNCTION(BlueprintCallable, Category="Input")
+    void DoStopFiring();
+
+    UFUNCTION(BlueprintCallable, Category="Input")
+    void DoSwitchWeapon();
+    
+    UPROPERTY(EditAnywhere, Category="Input")
+    UInputAction* DebugTakeDamageAction;
+
+    UPROPERTY(EditAnywhere, Category="Input")
+    UInputAction* ReloadAction;
+    
+    UFUNCTION(BlueprintCallable, Category="Input")
+    void DoReload();
+    
+    virtual void AttachWeaponMeshes(AShooterWeapon* Weapon) override;
+    virtual void PlayFiringMontage(UAnimMontage* Montage) override;
+    virtual void AddWeaponRecoil(float Recoil) override;
+    virtual FVector GetWeaponTargetLocation() override;
+    virtual void AddWeaponClass(const TSubclassOf<AShooterWeapon>& WeaponClass) override;
+    virtual void OnWeaponActivated(AShooterWeapon* Weapon) override;
+    virtual void OnWeaponDeactivated(AShooterWeapon* Weapon) override;
+    virtual void OnSemiWeaponRefire() override;
+    
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UHealthComponent* HealthComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+    UHeartRateComponent* HeartRateComponent;
+ 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Stats")
+    int32 KillCount = 0;
+
+    UFUNCTION()
+    void HandleEnemyKilled(AActor* Enemy);
+    
+    
 protected:
 
     UPROPERTY(EditAnywhere, Category ="Input")
@@ -54,57 +113,4 @@ protected:
     
     AShooterWeapon* FindWeaponOfType(TSubclassOf<AShooterWeapon> WeaponClass) const;
     
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    UHealthComponent* HealthComponent;
-
-public:
-    
-    AShooterCharacter();
-    virtual void BeginPlay() override;
-    virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-    
-    virtual void ApplyDamage_Implementation(float DamageAmount, AActor* DamageInstigator) override;
-    virtual bool CanBeDamaged_Implementation() const override;
-    
-    UFUNCTION(BlueprintCallable, Category="Debug")
-    void DoDebugTakeDamage();
-    
-    UFUNCTION(BlueprintCallable, Category="Input")
-    void DoStartFiring();
-
-    UFUNCTION(BlueprintCallable, Category="Input")
-    void DoStopFiring();
-
-    UFUNCTION(BlueprintCallable, Category="Input")
-    void DoSwitchWeapon();
-    
-    UPROPERTY(EditAnywhere, Category="Input")
-    UInputAction* DebugTakeDamageAction;
-
-    UPROPERTY(EditAnywhere, Category="Input")
-    UInputAction* ReloadAction;
-    
-    UFUNCTION(BlueprintCallable, Category="Input")
-    void DoReload();
-    
-    UPROPERTY(BlueprintAssignable, Category="Weapons")
-    FOnAmmoChanged OnAmmoChanged;
-    
-    virtual void AttachWeaponMeshes(AShooterWeapon* Weapon) override;
-    virtual void PlayFiringMontage(UAnimMontage* Montage) override;
-    virtual void AddWeaponRecoil(float Recoil) override;
-    virtual FVector GetWeaponTargetLocation() override;
-    virtual void AddWeaponClass(const TSubclassOf<AShooterWeapon>& WeaponClass) override;
-    virtual void OnWeaponActivated(AShooterWeapon* Weapon) override;
-    virtual void OnWeaponDeactivated(AShooterWeapon* Weapon) override;
-    virtual void OnSemiWeaponRefire() override;
-    
-    UPROPERTY(BlueprintAssignable, Category="Stats")
-    FOnKillCountChanged OnKillCountChanged;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Stats")
-    int32 KillCount = 0;
-
-    UFUNCTION()
-    void HandleEnemyKilled(AActor* Enemy);
 };

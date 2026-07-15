@@ -6,6 +6,9 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Shadow_Ops.h"
+#include "ShooterCharacter.h"
+#include "Components/HealthComponent.h"
+#include "Components/HeartRateComponent.h"
 
 AShadow_OpsCharacter::AShadow_OpsCharacter()
 {
@@ -95,6 +98,17 @@ void AShadow_OpsCharacter::Tick(float DeltaSeconds)
 
     // Broadcast stamina changed (matching health delegate)
     OnStaminaChanged.Broadcast(Stamina, MaxStamina);
+    
+    if (const AShooterCharacter* Shooter = Cast<AShooterCharacter>(this))
+    {
+        if (Shooter->HeartRateComponent && Shooter->HealthComponent)
+        {
+            const float StaminaPercent = GetStaminaPercent();
+            const float HealthPercent  = Shooter->HealthComponent->GetHealthPercent();
+
+            Shooter->HeartRateComponent->UpdateHeartRate(DeltaSeconds, StaminaPercent, HealthPercent);
+        }
+    }
 }
 
 

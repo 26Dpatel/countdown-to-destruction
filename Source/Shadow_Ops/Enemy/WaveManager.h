@@ -27,6 +27,9 @@ public:
 
     UPROPERTY(BlueprintAssignable, Category = "Events")
     FOnOnAllWavesCompleted OnAllWavesCompleted;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave System|State")
+    int32 EnemiesAlive{ 0 };
 
 protected:
     virtual void BeginPlay() override;
@@ -49,10 +52,7 @@ protected:
     // State
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave System|State")
     int32 CurrentWaveIndex{ 0 };
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave System|State")
-    int32 EnemiesAlive{ 0 };
-
+    
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave System|State")
     int32 EnemiesToSpawn{ 0 };
 
