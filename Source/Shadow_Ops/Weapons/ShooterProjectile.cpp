@@ -115,13 +115,11 @@ void AShooterProjectile::ProcessHit(AActor* HitActor, UPrimitiveComponent* HitCo
     if (!HitActor || (HitActor == GetOwner() && !bDamageOwner))
         return;
 
-    // Damageable interface (drones, enemies, etc.)
-    if (HitActor->GetClass()->ImplementsInterface(UDamageable::StaticClass()))
+    if (IDamageable* Damageable = Cast<IDamageable>(HitActor))
     {
-        IDamageable::Execute_ApplyDamage(HitActor, HitDamage, GetInstigator());
+        Damageable->ReceiveDamage(HitDamage, GetInstigator());
     }
-
-    // Character support
+    
     if (ACharacter* HitCharacter = Cast<ACharacter>(HitActor))
     {
         UGameplayStatics::ApplyDamage(HitCharacter, HitDamage,

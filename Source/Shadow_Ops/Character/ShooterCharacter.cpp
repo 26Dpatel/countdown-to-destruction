@@ -38,23 +38,53 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
     }
 }
 
-void AShooterCharacter::ApplyDamage_Implementation(float DamageAmount, AActor* DamageInstigator)
+
+void AShooterCharacter::ReceiveDamage(float DamageAmount, AActor* DamagingActor)
 {
-    if (HealthComponent)
+    if (!HealthComponent)
     {
-        HealthComponent->TakeDamage(DamageAmount);
+        return;
+    }
+
+    // Apply damage through your HealthComponent
+    HealthComponent->TakeDamage(DamageAmount);
+
+    // Optional: heart rate spike
+    if (HeartRateComponent)
+    {
+        HeartRateComponent->OnDamageTaken(DamageAmount);
+    }
+
+    // If dead, handle death
+    if (HealthComponent->IsDead())
+    {
+        // Stop firing weapon
+        if (CurrentWeapon)
+        {
+            CurrentWeapon->StopFiring();
+        }
+
+        if (AController* PlayerController = GetController())
+        {
+            PlayerController->DisableInput(nullptr);
+        }
+
+        // Enable ragdoll physics
+        GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+        GetMesh()->SetSimulatePhysics(true);
+
+        // Optional: broadcast death event (UI, game mode, etc.)
+        // HealthComponent->OnDeath.Broadcast(); // Already done inside component
+
+        // Destroy after delay
+        SetLifeSpan(5.0f);
     }
 }
 
-bool AShooterCharacter::CanBeDamaged_Implementation() const
-{
-    return HealthComponent && !HealthComponent->IsDead();
-}
 
 void AShooterCharacter::DoDebugTakeDamage()
 {
-    constexpr float DebugDamage = 25.0f;
-    ApplyDamage_Implementation(DebugDamage, this);
+    ReceiveDamage(10.0f, this);
 }
 
 void AShooterCharacter::DoStartFiring()

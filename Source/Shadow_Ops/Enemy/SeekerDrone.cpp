@@ -1,6 +1,7 @@
 ﻿#include "SeekerDrone.h"
 #include "Interfaces/Damageable.h"
 #include "Kismet/GameplayStatics.h"
+#include "EnemyBase.h"
 
 ASeekerDrone::ASeekerDrone()
 {
@@ -33,14 +34,12 @@ void ASeekerDrone::CheckContactDamage()
 
 	for (AActor* Actor : OverlappingActors)
 	{
-		// Don't damage other enemies
 		if (Cast<AEnemyBase>(Actor))
 			continue;
-
-		// Check interface properly
-		if (Actor->GetClass()->ImplementsInterface(UDamageable::StaticClass()))
+		
+		if (IDamageable* Damageable = Cast<IDamageable>(Actor))
 		{
-			IDamageable::Execute_ApplyDamage(Actor, ContactDamage, this);
+			Damageable->ReceiveDamage(ContactDamage, this);
 			LastContactDamageTime = CurrentTime;
 			break;
 		}

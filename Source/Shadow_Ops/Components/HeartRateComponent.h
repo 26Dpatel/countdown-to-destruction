@@ -19,6 +19,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Heart Rate")
 	void UpdateHeartRate(float DeltaSeconds, float StaminaPercent, float HealthPercent);
 
+	// Spike heart rate when taking damage
+	UFUNCTION(BlueprintCallable, Category="Heart Rate")
+	void OnDamageTaken(float DamageAmount);
+
 	UFUNCTION(BlueprintPure, Category="Heart Rate")
 	float GetHeartRate() const { return CurrentHeartRate; }
 
@@ -39,7 +43,7 @@ protected:
 	// How fast heart rate changes
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="HeartRate")
 	float HeartRateChangeSpeed = 50.0f;
-	
+    
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="HeartRate")
 	float CurrentHeartRate = 70.0f;
 };

@@ -31,3 +31,15 @@ void UHeartRateComponent::UpdateHeartRate(float DeltaSeconds, float StaminaPerce
 
 	OnHeartRateChanged.Broadcast(RoundedHeartRate);
 }
+
+void UHeartRateComponent::OnDamageTaken(float DamageAmount)
+{
+	CurrentHeartRate = FMath::Clamp(
+		CurrentHeartRate + DamageAmount * 0.5f,
+		RestingHeartRate,
+		MaxHeartRate
+	);
+
+	OnHeartRateChanged.Broadcast(FMath::RoundToInt(CurrentHeartRate));
+}
+

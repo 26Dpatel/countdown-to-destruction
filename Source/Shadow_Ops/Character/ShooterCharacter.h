@@ -37,8 +37,7 @@ public:
     UPROPERTY(BlueprintAssignable, Category="Stats")
     FOnKillCountChanged OnKillCountChanged;
     
-    virtual void ApplyDamage_Implementation(float DamageAmount, AActor* DamageInstigator) override;
-    virtual bool CanBeDamaged_Implementation() const override;
+    virtual void ReceiveDamage(float DamageAmount, AActor* DamagedActor) override;
     
     UFUNCTION(BlueprintCallable, Category="Debug")
     void DoDebugTakeDamage();
