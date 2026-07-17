@@ -25,6 +25,8 @@ struct FEnemyTypeData : public FTableRowBase
 	float MoveSpeed{ 300.0f };
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
 	float DropChance{ 0.5f };
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy")
+	float HealthForPlayer{ 5.0f };
 };
 
 /** 

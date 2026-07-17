@@ -158,7 +158,8 @@ void AWaveManager::SpawnEnemy()
             EnemyData.Health,
             EnemyData.MoveSpeed,
             0.f,
-            0
+            0,
+            5.0f
         );
 
         Enemy->OnEnemyDeath.AddDynamic(this, &AWaveManager::OnEnemyDied);

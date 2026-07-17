@@ -27,7 +27,7 @@ public:
     UPROPERTY(BlueprintAssignable, Category = "Events")
     FOnEnemyDeath OnEnemyDeath;
 
-    virtual void InitFromData(float InHealth, float InMoveSpeed, float InDropChance, int32 InScoreValue);
+    virtual void InitFromData(float InHealth, float InMoveSpeed, float InDropChance, int32 InScoreValue, float InHealthForPlayer);
 
     // Drops
     UPROPERTY(EditDefaultsOnly, Category = "Enemy|Drops")
@@ -45,7 +45,10 @@ protected:
 
     // Stats
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|Stats")
-    float MaxHealth{ 20.0f };
+    float MaxHealth{ 20.0f }; 
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy|Stats")
+    float HealthForPlayer{ 5.0f };
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enemy|Stats")
     float CurrentHealth;

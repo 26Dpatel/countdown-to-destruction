@@ -27,6 +27,9 @@ class AShadow_OpsCharacter : public ACharacter
     /** First person camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
     UCameraComponent* FirstPersonCameraComponent;
+    
+    UPROPERTY(BlueprintAssignable, Category="Stamina|Events")
+    FOnStaminaChanged OnStaminaChanged;
 
 public:
     AShadow_OpsCharacter();
@@ -60,10 +63,7 @@ protected:
     // -------------------------
     UPROPERTY(EditAnywhere, Category ="Input")
     UInputAction* JumpAction;
-
-    UPROPERTY(EditAnywhere, Category ="Input")
-    UInputAction* PauseGameAction;
-
+    
     UPROPERTY(EditAnywhere, Category ="Input")
     UInputAction* MoveAction;
 
@@ -101,10 +101,6 @@ protected:
     float StaminaRegenRate = 25.0f;
 
     bool bIsSprinting = false;
-
-    /** Stamina changed event */
-    UPROPERTY(BlueprintAssignable, Category="Stamina|Events")
-    FOnStaminaChanged OnStaminaChanged;
     
     // -------------------------
     // Input Functions

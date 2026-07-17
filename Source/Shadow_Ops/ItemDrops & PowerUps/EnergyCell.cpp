@@ -39,8 +39,7 @@ void AEnergyCell::Tick(float DeltaTime)
     SetActorLocation(NewLocation);
 
     // despawn warning: start flashing when nearing end of lifetime
-    float TimeRemaining = LifeTime - Time;
-    if (TimeRemaining <= DespawnWarningTime && !bIsFlashing)
+    if (const float TimeRemaining = LifeTime - Time; TimeRemaining <= DespawnWarningTime && !bIsFlashing)
     {
         bIsFlashing = true;
 
@@ -55,7 +54,7 @@ void AEnergyCell::Tick(float DeltaTime)
     }
 }
 
-void AEnergyCell::ToggleVisibility()
+void AEnergyCell::ToggleVisibility() const
 {
     MeshComponent->SetVisibility(!MeshComponent->IsVisible());
 }

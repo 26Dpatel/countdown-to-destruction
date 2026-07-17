@@ -2,6 +2,7 @@
 
 #include "Character/ShooterCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/HealthComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "ItemDrops & PowerUps/EnergyCell.h"
 #include "Kismet/GameplayStatics.h"
@@ -77,10 +78,11 @@ void AEnemyBase::ReceiveDamage(float DamageAmount, AActor* DamageInstigator)
     }
 }
 
-void AEnemyBase::InitFromData(float InHealth, float InMoveSpeed, float InDropChance, int32 InScoreValue)
+void AEnemyBase::InitFromData(float InHealth, float InMoveSpeed, float InDropChance, int32 InScoreValue, float InHealthForPlayer)
 {
     MaxHealth = InHealth;
     CurrentHealth = InHealth;
+    HealthForPlayer = InHealthForPlayer;
     MoveSpeed = InMoveSpeed;
     DropChance = InDropChance;
 
@@ -147,6 +149,13 @@ void AEnemyBase::Die()
 
         GetWorld()->SpawnActor<AEnergyCell>(EnergyCellClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
     }
+    
+    AShooterCharacter* Player = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(this, 0));
+    if (Player && Player->HealthComponent)
+    {
+        Player->HealthComponent->Heal(HealthForPlayer);
+    }
 
+    
     Destroy();
 }

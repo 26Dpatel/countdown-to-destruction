@@ -72,9 +72,8 @@ void AShooterCharacter::ReceiveDamage(float DamageAmount, AActor* DamagingActor)
         // Enable ragdoll physics
         GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
         GetMesh()->SetSimulatePhysics(true);
-
-        // Optional: broadcast death event (UI, game mode, etc.)
-        // HealthComponent->OnDeath.Broadcast(); // Already done inside component
+        
+        HealthComponent->OnDeath.Broadcast();
 
         // Destroy after delay
         SetLifeSpan(5.0f);

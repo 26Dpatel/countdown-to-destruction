@@ -69,10 +69,10 @@ public:
     virtual void OnWeaponDeactivated(AShooterWeapon* Weapon) override;
     virtual void OnSemiWeaponRefire() override;
     
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
     UHealthComponent* HealthComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Components")
     UHeartRateComponent* HeartRateComponent;
  
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Stats")

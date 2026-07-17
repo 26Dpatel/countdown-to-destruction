@@ -28,7 +28,7 @@ protected:
 
     // Flashing callback
     UFUNCTION()
-    void ToggleVisibility();
+    void ToggleVisibility() const;
     
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
     TObjectPtr<UStaticMeshComponent> MeshComponent;
