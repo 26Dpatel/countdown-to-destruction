@@ -67,7 +67,7 @@ public:
     virtual void AddWeaponClass(const TSubclassOf<AShooterWeapon>& WeaponClass) override;
     virtual void OnWeaponActivated(AShooterWeapon* Weapon) override;
     virtual void OnWeaponDeactivated(AShooterWeapon* Weapon) override;
-    virtual void OnSemiWeaponRefire() override;
+    virtual void OnSemiWeaponRefire() override; 
     
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
     UHealthComponent* HealthComponent;
