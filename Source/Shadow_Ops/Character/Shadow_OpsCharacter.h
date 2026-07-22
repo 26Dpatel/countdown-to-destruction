@@ -9,6 +9,7 @@ class UInputComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
 class UInputAction;
+class USoundBase;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -20,11 +21,9 @@ class AShadow_OpsCharacter : public ACharacter
 {
     GENERATED_BODY()
 
-    /** Pawn mesh: first person view (arms; seen only by self) */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
     USkeletalMeshComponent* FirstPersonMesh;
 
-    /** First person camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
     UCameraComponent* FirstPersonCameraComponent;
     
@@ -37,30 +36,22 @@ public:
     virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
     virtual void Tick(float DeltaSeconds) override;
 
-    /** Returns the first person mesh **/
     USkeletalMeshComponent* GetFirstPersonMesh() const { return FirstPersonMesh; }
-
-    /** Returns first person camera component **/
     UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
-    /** Returns stamina as a per cent (0–1) */
     UFUNCTION(BlueprintCallable, Category="Stamina")
     float GetStaminaPercent() const;
 
 protected:
 
-    // -------------------------
     // UI
-    // -------------------------
     UPROPERTY(BlueprintReadOnly, Category = "UI")
     TObjectPtr<UUserWidget> PauseWidget;
     
     UPROPERTY(EditDefaultsOnly, Category = "UI")
     TSubclassOf<UUserWidget> PauseMenuClass;
 
-    // -------------------------
     // Input Actions
-    // -------------------------
     UPROPERTY(EditAnywhere, Category ="Input")
     UInputAction* JumpAction;
     
@@ -76,18 +67,33 @@ protected:
     UPROPERTY(EditAnywhere, Category="Input")
     UInputAction* SprintAction;
 
-    // -------------------------
     // Movement Speeds
-    // -------------------------
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
     float WalkSpeed = 600.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement")
     float SprintSpeed = 1000.0f;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Effect")
+    USoundBase* FootstepsSounds;
 
-    // -------------------------
+    // Footstep timing
+    FTimerHandle FootstepTimerHandle;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Footsteps")
+    float WalkFootstepInterval = 0.45f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Footsteps")
+    float SprintFootstepInterval = 0.30f;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Footsteps")
+    float SprintFootstepVolume = 1.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Footsteps")
+    float WalkFootstepVolume = 0.4f;
+
+
     // Stamina System
-    // -------------------------
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Stamina")
     float Stamina = 100.0f;
 
@@ -101,10 +107,8 @@ protected:
     float StaminaRegenRate = 25.0f;
 
     bool bIsSprinting = false;
-    
-    // -------------------------
+
     // Input Functions
-    // -------------------------
     void MoveInput(const FInputActionValue& Value);
     void LookInput(const FInputActionValue& Value);
 
@@ -125,4 +129,6 @@ protected:
 
     UFUNCTION(BlueprintCallable, Category="Input")
     virtual void DoSprintEnd();
+
+    void PlayFootstepSound() const;
 };

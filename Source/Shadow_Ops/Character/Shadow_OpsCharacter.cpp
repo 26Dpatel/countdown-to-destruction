@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Shadow_Ops.h"
 #include "ShooterCharacter.h"
 #include "Components/HealthComponent.h"
@@ -14,17 +15,14 @@ AShadow_OpsCharacter::AShadow_OpsCharacter()
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    // Set size for collision capsule
     GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
     
-    // Create the first person mesh
     FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("First Person Mesh"));
     FirstPersonMesh->SetupAttachment(GetMesh());
     FirstPersonMesh->SetOnlyOwnerSee(true);
     FirstPersonMesh->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::FirstPerson;
     FirstPersonMesh->SetCollisionProfileName(FName("NoCollision"));
 
-    // Create the Camera Component  
     FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("First Person Camera"));
     FirstPersonCameraComponent->SetupAttachment(FirstPersonMesh, FName("head"));
     FirstPersonCameraComponent->SetRelativeLocationAndRotation(FVector(-2.8f, 5.89f, 0.0f), FRotator(0.0f, 90.0f, -90.0f));
@@ -34,17 +32,14 @@ AShadow_OpsCharacter::AShadow_OpsCharacter()
     FirstPersonCameraComponent->FirstPersonFieldOfView = 70.0f;
     FirstPersonCameraComponent->FirstPersonScale = 0.6f;
 
-    // configure the character comps
     GetMesh()->SetOwnerNoSee(true);
     GetMesh()->FirstPersonPrimitiveType = EFirstPersonPrimitiveType::WorldSpaceRepresentation;
 
     GetCapsuleComponent()->SetCapsuleSize(34.0f, 96.0f);
 
-    // Configure character movement
     GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
     GetCharacterMovement()->AirControl = 0.5f;
 
-    // Set default walk speed
     GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
@@ -52,18 +47,14 @@ void AShadow_OpsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 {   
     if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
-        // Jumping
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AShadow_OpsCharacter::DoJumpStart);
         EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AShadow_OpsCharacter::DoJumpEnd);
 
-        // Moving
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShadow_OpsCharacter::MoveInput);
 
-        // Looking/Aiming
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShadow_OpsCharacter::LookInput);
         EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AShadow_OpsCharacter::LookInput);
 
-        // Sprinting
         EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &AShadow_OpsCharacter::DoSprintStart);
         EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AShadow_OpsCharacter::DoSprintEnd);
     }
@@ -77,6 +68,7 @@ void AShadow_OpsCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
+    // Stamina logic
     if (bIsSprinting)
     {
         Stamina -= StaminaDrainRate * DeltaSeconds;
@@ -96,9 +88,9 @@ void AShadow_OpsCharacter::Tick(float DeltaSeconds)
         }
     }
 
-    // Broadcast stamina changed (matching health delegate)
     OnStaminaChanged.Broadcast(Stamina, MaxStamina);
-    
+
+    // Heart rate update
     if (const AShooterCharacter* Shooter = Cast<AShooterCharacter>(this))
     {
         if (Shooter->HeartRateComponent && Shooter->HealthComponent)
@@ -109,8 +101,22 @@ void AShadow_OpsCharacter::Tick(float DeltaSeconds)
             Shooter->HeartRateComponent->UpdateHeartRate(DeltaSeconds, StaminaPercent, HealthPercent);
         }
     }
-}
 
+    // Footstep logic
+
+    if (!GetVelocity().IsNearlyZero())
+    {
+        if (!GetWorldTimerManager().IsTimerActive(FootstepTimerHandle))
+        {
+            float Interval = bIsSprinting ? SprintFootstepInterval : WalkFootstepInterval;
+            GetWorldTimerManager().SetTimer(FootstepTimerHandle, this, &AShadow_OpsCharacter::PlayFootstepSound, Interval, true);
+        }
+    }
+    else
+    {
+        GetWorldTimerManager().ClearTimer(FootstepTimerHandle);
+    }
+}
 
 float AShadow_OpsCharacter::GetStaminaPercent() const
 {
@@ -170,4 +176,18 @@ void AShadow_OpsCharacter::DoSprintEnd()
 {
     bIsSprinting = false;
     GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void AShadow_OpsCharacter::PlayFootstepSound() const
+{
+    if (!FootstepsSounds) return;
+
+    const float Volume = bIsSprinting ? SprintFootstepVolume : WalkFootstepVolume;
+
+    UGameplayStatics::PlaySoundAtLocation(
+        this,
+        FootstepsSounds,
+        GetActorLocation(),
+        Volume
+    );
 }
