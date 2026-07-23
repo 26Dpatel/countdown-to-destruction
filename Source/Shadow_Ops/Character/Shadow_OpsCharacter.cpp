@@ -178,6 +178,27 @@ void AShadow_OpsCharacter::DoSprintEnd()
     GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
+void AShadow_OpsCharacter::Landed(const FHitResult& Hit)
+{
+    Super::Landed(Hit);
+
+    if (!LandingSounds) return;
+
+    const float FallSpeed = FMath::Abs(GetVelocity().Z);
+    const float Volume = FMath::GetMappedRangeValueClamped(
+        FVector2D(200.f, 1200.f),   
+        FVector2D(0.3f, 1.0f),      
+        FallSpeed
+    );
+
+    UGameplayStatics::PlaySoundAtLocation(
+        this,
+        LandingSounds,
+        GetActorLocation(),
+        Volume
+    );
+}
+
 void AShadow_OpsCharacter::PlayFootstepSound() const
 {
     if (!FootstepsSounds) return;

@@ -76,6 +76,15 @@ void AShooterProjectile::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 
 void AShooterProjectile::ExplosionCheck(const FVector& ExplosionCenter)
 {
+    if (ExplosionSound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(
+            this,
+            ExplosionSound,
+            ExplosionCenter
+        );
+    }
+
     TArray<FOverlapResult> Overlaps;
 
     FCollisionShape OverlapShape;
@@ -91,8 +100,14 @@ void AShooterProjectile::ExplosionCheck(const FVector& ExplosionCenter)
     if (!bDamageOwner)
         QueryParams.AddIgnoredActor(GetInstigator());
 
-    GetWorld()->OverlapMultiByObjectType(Overlaps, ExplosionCenter, FQuat::Identity,
-                                         ObjectParams, OverlapShape, QueryParams);
+    GetWorld()->OverlapMultiByObjectType(
+        Overlaps,
+        ExplosionCenter,
+        FQuat::Identity,
+        ObjectParams,
+        OverlapShape,
+        QueryParams
+    );
 
     TArray<AActor*> DamagedActors;
 
@@ -105,9 +120,15 @@ void AShooterProjectile::ExplosionCheck(const FVector& ExplosionCenter)
         DamagedActors.Add(Actor);
 
         FVector ExplosionDir = Actor->GetActorLocation() - GetActorLocation();
-        ProcessHit(Actor, CurrentOverlap.GetComponent(), GetActorLocation(), ExplosionDir.GetSafeNormal());
+        ProcessHit(
+            Actor,
+            CurrentOverlap.GetComponent(),
+            GetActorLocation(),
+            ExplosionDir.GetSafeNormal()
+        );
     }
 }
+
 
 void AShooterProjectile::ProcessHit(AActor* HitActor, UPrimitiveComponent* HitComp,
                                     const FVector& HitLocation, const FVector& HitDirection)

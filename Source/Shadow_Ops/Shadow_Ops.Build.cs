@@ -16,7 +16,8 @@ public class Shadow_Ops : ModuleRules
 			"AIModule",
 			"UMG",
 			"Slate",
-			"SlateCore"
+			"SlateCore",
+			"Niagara"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

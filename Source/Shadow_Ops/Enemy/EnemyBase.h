@@ -7,6 +7,8 @@
 
 class AEnergyCell;
 class UCapsuleComponent;
+class UNiagaraSystem;
+class USoundBase;
 class UFloatingPawnMovement;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDeath, AActor*, Enemy);
@@ -29,6 +31,16 @@ public:
 
     virtual void InitFromData(float InHealth, float InMoveSpeed, float InDropChance, int32 InScoreValue, float InHealthForPlayer);
 
+    // Feedback
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Feedback")
+    TObjectPtr<USoundBase> DeathSound;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Feedback")
+    TObjectPtr<USoundBase> ExplosionSound;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Feedback")
+    TObjectPtr<USoundBase> FlyingSound;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Feedback")
+    TObjectPtr<UNiagaraSystem> DeathEffect;
+    
     // Drops
     UPROPERTY(EditDefaultsOnly, Category = "Enemy|Drops")
     TSubclassOf<AEnergyCell> EnergyCellClass;
@@ -84,5 +96,5 @@ private:
 
     void StartStagger();
     void EndStagger();
-    void ToggleStaggerFlash();
+    void ToggleStaggerFlash() const;
 };

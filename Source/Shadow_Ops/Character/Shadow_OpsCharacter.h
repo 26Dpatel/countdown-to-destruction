@@ -75,8 +75,11 @@ protected:
     float SprintSpeed = 1000.0f;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Effect")
-    USoundBase* FootstepsSounds;
+    TObjectPtr<USoundBase> FootstepsSounds;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Effect")
+    TObjectPtr<USoundBase> LandingSounds;
+    
     // Footstep timing
     FTimerHandle FootstepTimerHandle;
 
@@ -129,6 +132,9 @@ protected:
 
     UFUNCTION(BlueprintCallable, Category="Input")
     virtual void DoSprintEnd();
-
+    
+    UFUNCTION(BlueprintCallable, Category="Input")
+    virtual void Landed(const FHitResult& Hit) override;
+    
     void PlayFootstepSound() const;
 };

@@ -24,7 +24,7 @@ public:
 	void OnDamageTaken(float DamageAmount);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect")
-	USoundBase* HeartRateSound;
+	TObjectPtr<USoundBase> HeartRateSound;
 
 	UFUNCTION(BlueprintPure, Category="Heart Rate")
 	float GetHeartRate() const { return CurrentHeartRate; }

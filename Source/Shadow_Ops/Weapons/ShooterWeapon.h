@@ -114,16 +114,16 @@ protected:
 
     /** Sound to play when firing this weapon */
     UPROPERTY(EditAnywhere, Category="Effects")
-    USoundBase* FireSound;
+    TObjectPtr<USoundBase> FireSound;
 
     /** Sound to play when attempting to fire with an empty magazine */
     UPROPERTY(EditAnywhere, Category="Effects")
-    USoundBase* DryFireSound;
+    TObjectPtr<USoundBase> DryFireSound;
 
     /** Sound to play when reloading */
     UPROPERTY(EditAnywhere, Category="Effects")
-    USoundBase* ReloadSound;
-
+    TObjectPtr<USoundBase> ReloadSound;
+    
     /** Muzzle flash particle system */
     UPROPERTY(EditAnywhere, Category="Effects")
     UParticleSystem* MuzzleFlash;

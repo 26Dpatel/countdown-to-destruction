@@ -1,5 +1,5 @@
 ﻿#include "EnemyBase.h"
-
+#include "NiagaraFunctionLibrary.h"
 #include "Character/ShooterCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/HealthComponent.h"
@@ -34,6 +34,11 @@ void AEnemyBase::BeginPlay()
     CurrentHealth = MaxHealth;
     MovementComponent->MaxSpeed = MoveSpeed;
     SpawnTime = GetWorld()->GetTimeSeconds();
+        
+    if (FlyingSound)
+    {
+        UGameplayStatics::SpawnSoundAtLocation(this, FlyingSound, GetActorLocation());
+    }
 
     if (AShooterCharacter* Shooter = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(this, 0)))
     {
@@ -135,13 +140,23 @@ void AEnemyBase::EndStagger()
     MeshComponent->SetVisibility(true);
 }
 
-void AEnemyBase::ToggleStaggerFlash()
+void AEnemyBase::ToggleStaggerFlash() const
 {
     MeshComponent->SetVisibility(!MeshComponent->IsVisible());
 }
 
 void AEnemyBase::Die()
 {
+    
+    if (DeathSound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
+    }
+    if (DeathEffect)
+    {
+        UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, DeathEffect, GetActorLocation());
+    }
+    
     if (FMath::FRand() < DropChance && EnergyCellClass)
     {
         FActorSpawnParameters SpawnParams;

@@ -47,7 +47,10 @@ protected:
     bool bExplodeOnHit = false;
 
     UPROPERTY(EditAnywhere, Category="Projectile|Explosion", meta = (ClampMin = 0, ClampMax = 5000, Units = "cm"))
-    float ExplosionRadius = 500.0f;    
+    float ExplosionRadius = 500.0f; 
+    
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile|Explosion")
+    TObjectPtr<USoundBase> ExplosionSound;
 
     bool bHit = false;
 
