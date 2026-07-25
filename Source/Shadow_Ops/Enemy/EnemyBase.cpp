@@ -147,7 +147,6 @@ void AEnemyBase::ToggleStaggerFlash() const
 
 void AEnemyBase::Die()
 {
-    
     if (DeathSound)
     {
         UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
@@ -161,16 +160,13 @@ void AEnemyBase::Die()
     {
         FActorSpawnParameters SpawnParams;
         SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
+        
         GetWorld()->SpawnActor<AEnergyCell>(EnergyCellClass, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
     }
-    
-    AShooterCharacter* Player = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(this, 0));
-    if (Player && Player->HealthComponent)
+
+    if (const AShooterCharacter* Player = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(this, 0)); Player && Player->HealthComponent)
     {
         Player->HealthComponent->Heal(HealthForPlayer);
     }
-
-    
     Destroy();
 }

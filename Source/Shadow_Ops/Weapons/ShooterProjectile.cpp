@@ -76,15 +76,6 @@ void AShooterProjectile::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, U
 
 void AShooterProjectile::ExplosionCheck(const FVector& ExplosionCenter)
 {
-    if (ExplosionSound)
-    {
-        UGameplayStatics::PlaySoundAtLocation(
-            this,
-            ExplosionSound,
-            ExplosionCenter
-        );
-    }
-
     TArray<FOverlapResult> Overlaps;
 
     FCollisionShape OverlapShape;

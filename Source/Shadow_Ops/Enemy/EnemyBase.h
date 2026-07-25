@@ -35,8 +35,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Feedback")
     TObjectPtr<USoundBase> DeathSound;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Feedback")
-    TObjectPtr<USoundBase> ExplosionSound;
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Feedback")
     TObjectPtr<USoundBase> FlyingSound;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy|Feedback")
     TObjectPtr<UNiagaraSystem> DeathEffect;
